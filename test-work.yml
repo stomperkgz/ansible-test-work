@@ -1,0 +1,50 @@
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Get docker key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+       repo: deb https://download.docker.com/linux/ubuntu hirsute stable
+       state: present
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+        update_cache: yes
+
+    - name: create build directory
+      file:
+        path: /root/demo-dockerfile
+        state: directory
+
+    - name: copy Dockerfile
+      copy:
+        src: ./Dockerfile
+        dest: /root/demo-dockerfile/Dockerfile
+
+    - name: copy netcat.sh
+      copy:
+        src: ./netcat.sh
+        dest: /root/demo-dockerfile/netcat.sh
+
+    - name: build container image
+      community.docker.docker_image:
+        name: work
+        build:
+          path: /root/demo-dockerfile
+        source: build
+
+    - name: start a container
+      community.docker.docker_container:
+        name: work
+        image: work:latest
+        user: root
+        env_file: /root/demo-dockerfile/myenv.env
+        state: started
+        restart: yes
+        ports:
+          - "80:80"

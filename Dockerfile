@@ -6,6 +6,5 @@ RUN apt-get install -y \
 	net-tools\
 	netcat
 COPY netcat.sh /
-COPY myenv.env /
 RUN chmod +x /netcat.sh
 ENTRYPOINT ["/netcat.sh"]

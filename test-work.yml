@@ -48,7 +48,8 @@
         name: work
         image: work:latest
         user: root
-        env_file: /root/demo-dockerfile/myenv.env
+        env:
+          EDITOR="{{ editor_value }}"
         state: started
         restart: yes
         ports:
